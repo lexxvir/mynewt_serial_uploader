@@ -157,9 +157,15 @@ port_setup(int fd, unsigned long speed)
 int
 port_write_data(int fd, void *buf, size_t len)
 {
-    if (write(fd, buf, len) != len) {
-        fprintf(stderr, "Write failed: %s\n", strerror(errno));
-        return -1;
+    while (1) {
+        if (write(fd, buf, len) != len) {
+            if (errno != EWOULDBLOCK) {
+                fprintf(stderr, "Write failed: %s\n", strerror(errno));
+                return -1;
+            }
+        } else {
+            break;
+        }
     }
     return 0;
 }
