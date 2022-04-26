@@ -90,10 +90,7 @@ serial_uploader_echo_ctl(uint8_t *buf, size_t sz, int val)
 
 	cbor_encoder_init(&enc, (void *)(nh + 1), sz, 0);
 
-	rc = cbor_encoder_create_map(&enc, &map, CborIndefiniteLength);
-
-	rc |= cbor_encode_text_stringz(&map, "_h");
-	rc |= cbor_encode_byte_string(&map, (void *)&nh, sizeof(nh));
+	rc = cbor_encoder_create_map(&enc, &map, 1);
 
 	rc |= cbor_encode_text_stringz(&map, "echo");
 	rc |= cbor_encode_int(&map, val);
@@ -125,10 +122,7 @@ serial_uploader_reset(uint8_t *buf, size_t sz, int val)
 
 	cbor_encoder_init(&enc, (void *)(nh + 1), sz, 0);
 
-	rc = cbor_encoder_create_map(&enc, &map, CborIndefiniteLength);
-
-	rc |= cbor_encode_text_stringz(&map, "_h");
-	rc |= cbor_encode_byte_string(&map, (void *)&nh, sizeof(nh));
+	rc = cbor_encoder_create_map(&enc, &map, 0);
 
 	rc |= cbor_encoder_close_container(&enc, &map);
 	if (rc) {
@@ -158,19 +152,19 @@ serial_uploader_create_seg0(uint8_t *buf, size_t sz,
 
 	cbor_encoder_init(&enc, (void *)(nh + 1), sz, 0);
 
-	rc = cbor_encoder_create_map(&enc, &map, CborIndefiniteLength);
+	rc = cbor_encoder_create_map(&enc, &map, 5);
 
-	rc |= cbor_encode_text_stringz(&map, "_h");
-	rc |= cbor_encode_byte_string(&map, (void *)&nh, sizeof(nh));
-
-	rc |= cbor_encode_text_stringz(&map, "sha");
-	rc |= cbor_encode_byte_string(&map, NULL, 0);
-	rc |= cbor_encode_text_stringz(&map, "off");
+	rc |= cbor_encode_text_stringz(&map, "image");
 	rc |= cbor_encode_uint(&map, 0);
-	rc |= cbor_encode_text_stringz(&map, "len");
-	rc |= cbor_encode_uint(&map, file_sz);
 	rc |= cbor_encode_text_stringz(&map, "data");
 	rc |= cbor_encode_byte_string(&map, data, seglen);
+	rc |= cbor_encode_text_stringz(&map, "len");
+	rc |= cbor_encode_uint(&map, file_sz);
+	rc |= cbor_encode_text_stringz(&map, "off");
+	rc |= cbor_encode_uint(&map, 0);
+	rc |= cbor_encode_text_stringz(&map, "sha");
+	rc |= cbor_encode_byte_string(&map, NULL, 0);
+
 	rc |= cbor_encoder_close_container(&enc, &map);
 	if (rc) {
 		return -1;
@@ -199,10 +193,7 @@ serial_uploader_create_segX(uint8_t *buf, size_t sz,
 
 	cbor_encoder_init(&enc, (void *)(nh + 1), sz, 0);
 
-	rc = cbor_encoder_create_map(&enc, &map,  CborIndefiniteLength);
-
-	rc |= cbor_encode_text_stringz(&map, "_h");
-	rc |= cbor_encode_byte_string(&map, (void *)&nh, sizeof(nh));
+	rc = cbor_encoder_create_map(&enc, &map,  2);
 
 	rc |= cbor_encode_text_stringz(&map, "off");
 	rc |= cbor_encode_uint(&map, off);
